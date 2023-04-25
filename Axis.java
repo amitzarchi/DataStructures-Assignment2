@@ -6,9 +6,9 @@ public class Axis {
     private Container last;
     private int size;
     private Container median;
-    private Comparator<Point> comparator;
+    private PointComparator comparator;
 
-    public Axis(Comparator<Point> comparatorAxis) {
+    public Axis(PointComparator comparatorAxis) {
         this.first = null;
         this.last = null;
         this.size = 0;
@@ -73,18 +73,21 @@ public class Axis {
         if (toRemove == null) {
             return;
         }
-        // If the node to remove is the first node
+
         if (toRemove == first) {
             first = toRemove.next;
-        } else {
+        } 
+        else {
             toRemove.prev.next = toRemove.next;
         }
-        // If the node to remove is the last node
+
         if (toRemove == last) {
             last = toRemove.prev;
-        } else {
+        } 
+        else {
             toRemove.next.prev = toRemove.prev;
         }
+
         size--;
 
         if ((size % 2) == 0 && (comparator.compare(toRemove.getData(), median.getData()) <= 0 )) {
@@ -98,6 +101,17 @@ public class Axis {
         toRemove.next = null;
     }
 
-    public Axis getRange(){}
+    public Axis getRange(int min, int max) {
+        Axis output = new Axis(comparator);
+        Container current =first;
+        while (comparator.compareByInt(current.getData(), min) < 0 ) {
+            current = current.next;
+        }
+        while (comparator.compareByInt(current.getData(), max) <= 0 ) {
+            output.add(current.getData());
+            current = current.next;
+        }
+        return output;
+    }
 }
 

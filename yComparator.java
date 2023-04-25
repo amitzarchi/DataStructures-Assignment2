@@ -1,6 +1,6 @@
 import java.util.Comparator;
 
-public class yComparator implements Comparator<Point> {
+public class yComparator extends PointComparator {
     public yComparator() {
         super();
     }
@@ -12,4 +12,13 @@ public class yComparator implements Comparator<Point> {
         else
             return 0;
     }
+    public int compareByInt(Point p, int n) {
+        if (p.getY() > n)
+            return 1;
+        else if (p.getY() < n)
+            return -1;
+        else
+            return 0;
+    }
+
 }
