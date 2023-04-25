@@ -1,9 +1,13 @@
 
 public class DataStructure implements DT {
 
+	private Axis xAxis;
+	private Axis yAxis;
 	//////////////// DON'T DELETE THIS CONSTRUCTOR ////////////////
 	public DataStructure()
 	{
+		xAxis = new Axis(new xComparator());
+		yAxis = new Axis(new yComparator());
 	}
 
 	@Override
@@ -26,26 +30,33 @@ public class DataStructure implements DT {
 
 	@Override
 	public double getDensity() {
-		// TODO Auto-generated method stub
-		return 0;
+		int xMax = xAxis.getLast().getData().getX();
+		int xMin = xAxis.getFirst().getData().getX();
+		int yMax = yAxis.getLast().getData().getY();
+		int yMin = yAxis.getFirst().getData().getY();
+		double density = xAxis.getSize() / (xMax - xMin) * (yMax - yMin);
+		return density;
 	}
 
 	@Override
 	public void narrowRange(int min, int max, Boolean axis) {
-		// TODO Auto-generated method stub
-		
+		removeUntil(min, axis);
+		removeFrom(max, axis);
 	}
 
 	@Override
 	public Boolean getLargestAxis() {
-		// TODO Auto-generated method stub
-		return null;
+		int xMax = xAxis.getLast().getData().getX();
+		int yMax = xAxis.getLast().getData().getY();
+		return (xMax > yMax);
 	}
 
 	@Override
 	public Container getMedian(Boolean axis) {
-		// TODO Auto-generated method stub
-		return null;
+		if (axis)
+			return xAxis.getMedian();
+		else
+			return yAxis.getMedian();
 	}
 
 	@Override
@@ -61,5 +72,41 @@ public class DataStructure implements DT {
 		return null;
 	}	
 	
+	private void removeUntil(int n, boolean axis) {
+		PointComparator comparator;
+		Container current;
+		if (axis) {
+			comparator = new xComparator();
+			current = xAxis.getFirst();
+		}
+		else {
+			comparator = new yComparator();
+			current = yAxis.getFirst();
+		}
+		while (comparator.compareByInt(current.getData(), n) < 0) {
+			Container toRemove = current;
+			xAxis.remove(toRemove.twin);
+			xAxis.remove(toRemove);
+			current = current.next;
+		}
+	}
+	private void removeFrom(int n, boolean axis) {
+		PointComparator comparator;
+		Container current;
+		if (axis) {
+			comparator = new xComparator();
+			current = xAxis.getLast();
+		}
+		else {
+			comparator = new yComparator();
+			current = yAxis.getLast();
+		}
+		while (comparator.compareByInt(current.getData(), n) < 0) {
+			Container toRemove = current;
+			xAxis.remove(toRemove.twin);
+			xAxis.remove(toRemove);
+			current = current.prev;
+		}
+	}
 }
 

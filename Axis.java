@@ -24,7 +24,7 @@ public class Axis {
 	int getSize() {
         return size;
     }
-	Container getMedian(Container first) {
+	Container getMedian() {
         return median;
     }
     public void add(Container toAdd) {
@@ -111,6 +111,27 @@ public class Axis {
             current = current.next;
         }
         return output;
+    }
+
+    public void narrowRange(int min, int max) {
+        deleteUntil(min);
+        deleteFrom(max);
+    }
+    private void deleteUntil(int n) {
+        Container current = first;
+        while (comparator.compareByInt(current.getData(), n) < 0) {
+            Container toRemove = current;
+            current = current.next;
+            remove(toRemove);
+        }
+    }
+    private void deleteFrom(int n) {
+        Container current = last;
+        while (comparator.compareByInt(current.getData(), n) < 0) {
+            Container toRemove = current;
+            current = current.prev;
+            remove(toRemove);
+        }
     }
 }
 
