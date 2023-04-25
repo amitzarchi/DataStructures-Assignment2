@@ -1,4 +1,3 @@
-import java.util.Comparator;
 
 public class yComparator extends PointComparator {
     public yComparator() {

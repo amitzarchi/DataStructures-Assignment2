@@ -1,4 +1,3 @@
-import java.util.Comparator;
 
 public class Axis {
 
@@ -28,41 +27,40 @@ public class Axis {
 	Container getMedian(Container first) {
         return median;
     }
-    public void add(Point point) {
+    public void add(Container toAdd) {
         size++;       
-        Container newCon = new Container(point);
         if (size == 0) {
-            first = newCon;
-            last = newCon;
-            median = newCon;
+            first = toAdd;
+            last = toAdd;
+            median = toAdd;
         }
         else {
             Container current = first;
             Container prev = null;
-            while (current != null && comparator.compare(current.getData(), newCon.getData()) < 0) {
+            while (current != null && comparator.compare(current.getData(), toAdd.getData()) < 0) {
                 prev = current;
                 current = current.getNext();
             }
             if (prev == null) {
-                newCon.next = first;
-                first.prev = newCon;
-                first = newCon;
+                toAdd.next = first;
+                first.prev = toAdd;
+                first = toAdd;
             }
             else if (current == null) {
-                last.next = newCon;
-                newCon.prev = last;
-                last = newCon;
+                last.next = toAdd;
+                toAdd.prev = last;
+                last = toAdd;
             }
             else {
-                prev.next = newCon;
-                current.prev = newCon;
-                newCon.next = current;
-                newCon.prev = prev;
+                prev.next = toAdd;
+                current.prev = toAdd;
+                toAdd.next = current;
+                toAdd.prev = prev;
             }
-            if ((size % 2) == 0 && (comparator.compare(newCon.getData(), median.getData()) > 0 )) {
+            if ((size % 2) == 0 && (comparator.compare(toAdd.getData(), median.getData()) > 0 )) {
                 median = median.next;
             }
-            else if ((size % 2 == 1) && (comparator.compare(newCon.getData(), median.getData()) < 0 )) {
+            else if ((size % 2 == 1) && (comparator.compare(toAdd.getData(), median.getData()) < 0 )) {
                 median = median.prev;
             }
 
@@ -108,7 +106,8 @@ public class Axis {
             current = current.next;
         }
         while (comparator.compareByInt(current.getData(), max) <= 0 ) {
-            output.add(current.getData());
+            Container toAdd = new Container(current.getData());
+            output.add(toAdd);
             current = current.next;
         }
         return output;
