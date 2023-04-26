@@ -1,55 +1,62 @@
+import com.sun.source.doctree.CommentTree;
+
+import java.time.chrono.ThaiBuddhistChronology;
 
 public class Axis {
 
-    private Container first;
-    private Container last;
-    private int size;
-    private Container median;
-    private PointComparator comparator;
+    private Container First;
+    private Container Last;
+    private int Size;
+    private Container Median;
+    private PointComparator Comparator;
 
     public Axis(PointComparator comparatorAxis) {
-        this.first = null;
-        this.last = null;
-        this.size = 0;
-        this.median = null;
-        this.comparator = comparatorAxis;
+        this.First = null;
+        this.Last = null;
+        this.Median = null;
+        this.Size = 0;
+        this.Comparator = comparatorAxis;
     }
 
     Container getFirst() {
-        return first;
+        return First;
     }
-	Container getLast() {
-        return last;
+
+    Container getLast() {
+        return Last;
     }
-	int getSize() {
-        return size;
+
+    int getSize() {
+        return Size;
     }
-	Container getMedian() {
-        return median;
+
+    Container getMedian() {
+        return Median;
     }
+    PointComparator getComparator() { return Comparator; }
     public void add(Container toAdd) {
-        size++;       
-        if (size == 0) {
-            first = toAdd;
-            last = toAdd;
-            median = toAdd;
+        this.Size = this.Size+1;
+        if (this.Size == 0) {
+            this.First = toAdd;
+            this.Last = toAdd;
+            this.Median = toAdd;
         }
         else {
-            Container current = first;
+            Container current = this.First;
             Container prev = null;
-            while (current != null && comparator.compare(current.getData(), toAdd.getData()) < 0) {
+            while (current != null && Comparator.compare(current.getData(), toAdd.getData()) < 0) {
                 prev = current;
                 current = current.getNext();
             }
             if (prev == null) {
-                toAdd.next = first;
-                first.prev = toAdd;
-                first = toAdd;
+                toAdd.next = this.First;
+                this.First.prev = toAdd;
+                this.First = toAdd;
             }
             else if (current == null) {
-                last.next = toAdd;
-                toAdd.prev = last;
-                last = toAdd;
+                this.Last.next = toAdd;
+                toAdd.prev = this.Last;
+                this.Last = toAdd;
             }
             else {
                 prev.next = toAdd;
@@ -57,58 +64,74 @@ public class Axis {
                 toAdd.next = current;
                 toAdd.prev = prev;
             }
-            if ((size % 2) == 0 && (comparator.compare(toAdd.getData(), median.getData()) > 0 )) {
-                median = median.next;
-            }
-            else if ((size % 2 == 1) && (comparator.compare(toAdd.getData(), median.getData()) < 0 )) {
-                median = median.prev;
-            }
-
-            }  
+            PreserveMedianAdd(toAdd);
         }
+        }
+    private void PreserveMedianAdd(Container toAdd){
+        if ((Size % 2) == 0 && (Comparator.compare(toAdd.getData(), Median.getData()) > 0 )) {
+            Median = Median.next;
+        }
+        else if ((Size % 2 == 1) && (Comparator.compare(toAdd.getData(), Median.getData()) < 0 )) {
+            Median = Median.prev;
+        }
+    }
+    private void PreserveMedianDelete(Container toRemove) {
+        if ((Size % 2) == 0 && (Comparator.compare(toRemove.getData(), Median.getData()) <= 0 )) {
+            Median = Median.next;
+        }
+        else if ((Size % 2 == 1) && (Comparator.compare(toRemove.getData(), Median.getData()) >= 0 )) {
+            Median = Median.prev;
+        }
+    }
 
     public void remove(Container toRemove) {
         if (toRemove == null) {
             return;
         }
-
-        if (toRemove == first) {
-            first = toRemove.next;
+        if (toRemove == First) {
+            First = toRemove.next;
         } 
         else {
             toRemove.prev.next = toRemove.next;
         }
-
-        if (toRemove == last) {
-            last = toRemove.prev;
+        if (toRemove == Last) {
+            Last = toRemove.prev;
         } 
         else {
             toRemove.next.prev = toRemove.prev;
         }
-
-        size--;
-
-        if ((size % 2) == 0 && (comparator.compare(toRemove.getData(), median.getData()) <= 0 )) {
-            median = median.next;
-        }
-        else if ((size % 2 == 1) && (comparator.compare(toRemove.getData(), median.getData()) >= 0 )) {
-            median = median.prev;
-        }
-        
+        Size --;
+        PreserveMedianDelete(toRemove);
         toRemove.prev = null;
         toRemove.next = null;
     }
 
+    //O(n)
     public Axis getRange(int min, int max) {
-        Axis output = new Axis(comparator);
-        Container current =first;
-        while (comparator.compareByInt(current.getData(), min) < 0 ) {
-            current = current.next;
+        PointComparator comp = this.getComparator();
+        Axis output = new Axis(this.Comparator);
+        Container current =this.Last;
+        Container toAdd = null;
+        while (current != null) {
+            if (comp.compareByInt(current.getData(), min) >= 0 & comp.compareByInt(current.getData(), max) <= 0) {
+                toAdd = new Container(current.getData());
+                output.add(toAdd);
+                current = current.prev;
+            }
         }
-        while (comparator.compareByInt(current.getData(), max) <= 0 ) {
-            Container toAdd = new Container(current.getData());
-            output.add(toAdd);
-            current = current.next;
+        return output;
+    }
+
+    public Axis getFitRange(int min, int max ,PointComparator comp) {
+        Axis output = new Axis(this.getComparator());
+        Container current =this.Last;
+        Container toAdd = null;
+        while (current != null) {
+            if (comp.compareByInt(current.getData(), min) >= 0 & comp.compareByInt(current.getData(), max) <= 0) {
+                toAdd = new Container(current.getData());
+                output.add(toAdd);
+                current = current.prev;
+            }
         }
         return output;
     }
@@ -118,16 +141,16 @@ public class Axis {
         deleteFrom(max);
     }
     private void deleteUntil(int n) {
-        Container current = first;
-        while (comparator.compareByInt(current.getData(), n) < 0) {
+        Container current = First;
+        while (Comparator.compareByInt(current.getData(), n) < 0) {
             Container toRemove = current;
             current = current.next;
             remove(toRemove);
         }
     }
     private void deleteFrom(int n) {
-        Container current = last;
-        while (comparator.compareByInt(current.getData(), n) < 0) {
+        Container current = Last;
+        while (Comparator.compareByInt(current.getData(), n) < 0) {
             Container toRemove = current;
             current = current.prev;
             remove(toRemove);
