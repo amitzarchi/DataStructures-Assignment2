@@ -24,7 +24,7 @@ public class Point {
 	public int getX() {
 		return x;
 	}
-
+	
 	public int getY() {
 		return y;
 	}
@@ -33,7 +33,10 @@ public class Point {
 		return name+"(" + x + ", " + y + ")";
 	}
 	
-
+	public String getName()
+	{
+		return name;
+	}
 	
 	public boolean equals(Object other)
 	{
