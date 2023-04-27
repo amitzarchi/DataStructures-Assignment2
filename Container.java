@@ -12,7 +12,6 @@ public class Container {
 		this.prev = null;
 		this.next = null;
 		this.twin = null;
-
 	}
 	
 	//Don't delete or change this function
