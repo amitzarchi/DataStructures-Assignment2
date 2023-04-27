@@ -97,11 +97,11 @@ public class DataStructure implements DT {
 			current = current.next;
 		}
 		current = currAxis.getLast();
-		while (comp.compareByInt(current.getData(), min) < 0) {
+		while (comp.compareByInt(current.getData(), max) > 0) {
 			toRemove = current;
 			secondAxis.remove(toRemove.twin);
 			currAxis.remove(toRemove);
-			current = current.next;
+			current = current.prev;
 		}
 	}
 
