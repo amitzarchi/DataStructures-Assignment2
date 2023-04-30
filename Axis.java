@@ -89,6 +89,8 @@ public class Axis {
     }
 
     public void remove(Container toRemove) {
+        Size--;
+        PreserveMedianDelete(toRemove);
         if (toRemove == null) {
             return;
         }
@@ -106,8 +108,6 @@ public class Axis {
         else {
             toRemove.next.prev = toRemove.prev;
         }
-        Size --;
-        PreserveMedianDelete(toRemove);
         toRemove.prev = null;
         toRemove.next = null;
     }
@@ -125,6 +125,8 @@ public class Axis {
                 output.add(toAdd);
                 current = current.prev;
             }
+            else 
+                current = current.prev;
         }
         return output;
     }
@@ -139,6 +141,8 @@ public class Axis {
                 output.add(toAdd);
                 current = current.prev;
             }
+            else 
+                current = current.prev;
         }
         return output;
     }

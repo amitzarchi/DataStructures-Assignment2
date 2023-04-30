@@ -67,7 +67,8 @@ public class DataStructure implements DT {
 		int index = 0;
 		while (index < arr.length && curr != null){
 			arr[index] = curr.getData();
-			curr = curr.getNext();
+			curr = curr.next;
+			index++;
 		}
 		return arr;
 	}
@@ -102,19 +103,19 @@ public class DataStructure implements DT {
 		PointComparator comp = currAxis.getComparator();
 		current = currAxis.getFirst();
 		//Iterating thrugh the first elements and removing them
-		while (comp.compareByInt(current.getData(), min) < 0) {
+		while (current != null && comp.compareByInt(current.getData(), min) < 0) {
 			toRemove = current;
+			current = current.next;
 			secondAxis.remove(toRemove.twin);
 			currAxis.remove(toRemove);
-			current = current.next;
 		}
 		current = currAxis.getLast();
 		//Iterating thrugh the last elements and removing them
-		while (comp.compareByInt(current.getData(), max) > 0) {
+		while (current != null && comp.compareByInt(current.getData(), max) > 0) {
 			toRemove = current;
+			current = current.prev;
 			secondAxis.remove(toRemove.twin);
 			currAxis.remove(toRemove);
-			current = current.prev;
 		}
 	}
 
@@ -142,7 +143,7 @@ public class DataStructure implements DT {
 		double minDist = (width/2);
 		if (axis) mid = container.getData().getX();
 		else mid = container.getData().getY();
-		Point[] arr =getPointsInRangeOppAxis((int)(mid-(width/2)), (int)(mid+(width/2)), axis); //O(n)
+		Point[] arr = getPointsInRangeOppAxis((int)(mid-(width/2)), (int)(mid+(width/2)), axis); //O(n)
 		int size = arr.length;
 		for (int i = 0; i< size; i++) {															//O(|B|)
 				for(int j = i+1; j<size && (getPointValue(arr[j],axis) - getPointValue(arr[i],axis)) < minDist; j++) {		//O(7)
