@@ -34,7 +34,6 @@ public class Axis {
 
 
     public void add(Container toAdd) {
-        this.Size = this.Size+1;
         if (this.Size == 0) {
             this.First = toAdd;
             this.Last = toAdd;
@@ -67,6 +66,7 @@ public class Axis {
                 toAdd.next = current;
                 toAdd.prev = prev;
             }
+            this.Size = this.Size+1;
             PreserveMedianAdd(toAdd);
         }
         }
