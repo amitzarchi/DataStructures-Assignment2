@@ -5,7 +5,7 @@ public class DataStructure implements DT {
 	private Axis yAxis;
 
 	//////////////// DON'T DELETE THIS CONSTRUCTOR ////////////////
-	// 
+	
 	public DataStructure() {
 		xAxis = new Axis(new xComparator());
 		yAxis = new Axis(new yComparator());
