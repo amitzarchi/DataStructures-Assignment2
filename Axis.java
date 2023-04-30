@@ -38,6 +38,7 @@ public class Axis {
             this.First = toAdd;
             this.Last = toAdd;
             this.Median = toAdd;
+            this.Size = this.Size+1;
         }
         else {
             Container current = this.First;

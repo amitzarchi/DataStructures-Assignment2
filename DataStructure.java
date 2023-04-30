@@ -75,11 +75,12 @@ public class DataStructure implements DT {
 	@Override //O(1)
 	// Using only methods which costs O(1), calculating the density costs O(1). O(1) total
 	public double getDensity() {
-		int xMax = xAxis.getLast().getData().getX();
-		int xMin = xAxis.getFirst().getData().getX();
-		int yMax = yAxis.getLast().getData().getY();
-		int yMin = yAxis.getFirst().getData().getY();
-		double density = xAxis.getSize() / (xMax - xMin) * (yMax - yMin);
+		double xMax = xAxis.getLast().getData().getX();
+		double xMin = xAxis.getFirst().getData().getX();
+		double yMax = yAxis.getLast().getData().getY();
+		double yMin = yAxis.getFirst().getData().getY();
+		double size = xAxis.getSize();
+		double density = size / ((xMax - xMin) * (yMax - yMin));
 		return density;
 	}
 
