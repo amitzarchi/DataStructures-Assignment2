@@ -9,6 +9,7 @@ public class DataStructure implements DT {
 		xAxis = new Axis(new xComparator());
 		yAxis = new Axis(new yComparator());
 	}
+	// using Axis's constructor to generate both X and Y Axis. Each O(1), Total O(1)
 
 	public DataStructure(Axis xAxis, Axis yAxis) {
 		this.xAxis = xAxis;
@@ -25,24 +26,30 @@ public class DataStructure implements DT {
 
 
 	@Override //O(n)
+	// Generating new Containers and setting as twins costs O(1), adding them to the lists using Axis's add method which sort them in the right place, which costs O(n). O(n) total 
 	public void addPoint(Point point) {
-		// create 2 containers, set as twins, insert to lists
+		// create 2 containers
 		Container twin1 = new Container(point);
 		Container twin2 = new Container(point);
+		//set each others as twins
 		twin1.setTwin(twin2);
 		twin2.setTwin(twin1);
+		// adding to both lists
 		xAxis.add(twin1);
 		yAxis.add(twin2);
 	}
 
 	@Override //O(n)
+	// Using Axis's "getRange" method which costs O(n), iterating thrugh them and adding to the Array costs O(n). O(n) total
 	public Point[] getPointsInRangeRegAxis(int min, int max, Boolean axis) {
 		Axis rangeAxis;
+		// using Axis's "getRange" method
 		if (axis) rangeAxis = this.xAxis.getRange(min, max);
 		else rangeAxis = this.yAxis.getRange(min, max);
 		Container curr = rangeAxis.getFirst();
 		Point[] arr = new Point[rangeAxis.getSize()];
 		int index = 0;
+		//adding the points to the output array
 		while (index < arr.length && curr != null){
 			arr[index] = curr.getData();
 			curr = curr.getNext();
@@ -66,6 +73,7 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(1)
+	// Using only methods which costs O(1), calculating the density costs O(1). O(1) total
 	public double getDensity() {
 		int xMax = xAxis.getLast().getData().getX();
 		int xMin = xAxis.getFirst().getData().getX();
@@ -76,11 +84,13 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(|A|)
+	//iterating only thrugh the elements which we need to remove, one time from the head of the list to the min value, once more from the tail of the list to the max, costs O(|A|).  O(|A|) total
 	public void narrowRange(int min, int max, Boolean axis) {
 		Axis currAxis;
 		Axis secondAxis;
 		Container toRemove;
 		Container current;
+		//setting the input Axis and Comparator
 		if (axis) {
 			currAxis = xAxis;
 			secondAxis = yAxis;
@@ -90,6 +100,7 @@ public class DataStructure implements DT {
 		}
 		PointComparator comp = currAxis.getComparator();
 		current = currAxis.getFirst();
+		//Iterating thrugh the first elements and removing them
 		while (comp.compareByInt(current.getData(), min) < 0) {
 			toRemove = current;
 			secondAxis.remove(toRemove.twin);
@@ -97,6 +108,7 @@ public class DataStructure implements DT {
 			current = current.next;
 		}
 		current = currAxis.getLast();
+		//Iterating thrugh the last elements and removing them
 		while (comp.compareByInt(current.getData(), max) > 0) {
 			toRemove = current;
 			secondAxis.remove(toRemove.twin);
@@ -106,6 +118,7 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(1)
+	//using only methods and operations which costs O(1). O(1) total
 	public Boolean getLargestAxis() {
 		int xMax = xAxis.getLast().getData().getX() - xAxis.getFirst().getData().getX();
 		int yMax = yAxis.getLast().getData().getY() - yAxis.getFirst().getData().getY();
@@ -113,6 +126,7 @@ public class DataStructure implements DT {
 	}
 
 	@Override//O(1)
+	//median value is maintained by the Axis add and remove methods, so getting it is just getting the field value. O(1) total
 	public Container getMedian(Boolean axis) {
 		if (axis)
 			return xAxis.getMedian();
@@ -215,5 +229,6 @@ public class DataStructure implements DT {
 		if (axis) return point.getX();
 		else return point.getY();
 	}
+
 }
 

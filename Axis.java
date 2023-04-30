@@ -1,7 +1,3 @@
-import com.sun.source.doctree.CommentTree;
-
-import java.time.chrono.ThaiBuddhistChronology;
-
 public class Axis {
 
     private Container First;
@@ -10,6 +6,7 @@ public class Axis {
     private Container Median;
     private PointComparator Comparator;
 
+    // Constructor initialize an empty linked list and set the input PointComparator
     public Axis(PointComparator comparatorAxis) {
         this.First = null;
         this.Last = null;
@@ -34,6 +31,8 @@ public class Axis {
         return Median;
     }
     PointComparator getComparator() { return Comparator; }
+
+
     public void add(Container toAdd) {
         this.Size = this.Size+1;
         if (this.Size == 0) {
@@ -44,20 +43,24 @@ public class Axis {
         else {
             Container current = this.First;
             Container prev = null;
+            // Iteraiting the list to find the right sorted place
             while (current != null && Comparator.compare(current.getData(), toAdd.getData()) < 0) {
                 prev = current;
                 current = current.getNext();
             }
+            // handle the case its the first Container
             if (prev == null) {
                 toAdd.next = this.First;
                 this.First.prev = toAdd;
                 this.First = toAdd;
             }
+            // handle the case its the last Container
             else if (current == null) {
                 this.Last.next = toAdd;
                 toAdd.prev = this.Last;
                 this.Last = toAdd;
             }
+            // handle the case its somewhere in the middle
             else {
                 prev.next = toAdd;
                 current.prev = toAdd;
@@ -88,12 +91,14 @@ public class Axis {
         if (toRemove == null) {
             return;
         }
+        //handle the case its removing the first element
         if (toRemove == First) {
             First = toRemove.next;
         } 
         else {
             toRemove.prev.next = toRemove.next;
         }
+        //handle the case its removing the last element
         if (toRemove == Last) {
             Last = toRemove.prev;
         } 
@@ -112,6 +117,7 @@ public class Axis {
         Axis output = new Axis(this.Comparator);
         Container current =this.Last;
         Container toAdd = null;
+        //iterating thrugh the whole list, and adding the relevant elements to "output"
         while (current != null) {
             if (comp.compareByInt(current.getData(), min) >= 0 & comp.compareByInt(current.getData(), max) <= 0) {
                 toAdd = new Container(current.getData());
@@ -136,25 +142,6 @@ public class Axis {
         return output;
     }
 
-    public void narrowRange(int min, int max) {
-        deleteUntil(min);
-        deleteFrom(max);
-    }
-    private void deleteUntil(int n) {
-        Container current = First;
-        while (Comparator.compareByInt(current.getData(), n) < 0) {
-            Container toRemove = current;
-            current = current.next;
-            remove(toRemove);
-        }
-    }
-    private void deleteFrom(int n) {
-        Container current = Last;
-        while (Comparator.compareByInt(current.getData(), n) < 0) {
-            Container toRemove = current;
-            current = current.prev;
-            remove(toRemove);
-        }
-    }
+
 }
 
