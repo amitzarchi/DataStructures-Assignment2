@@ -5,12 +5,11 @@ public class DataStructure implements DT {
 	private Axis yAxis;
 
 	//////////////// DON'T DELETE THIS CONSTRUCTOR ////////////////
+	// 
 	public DataStructure() {
 		xAxis = new Axis(new xComparator());
 		yAxis = new Axis(new yComparator());
 	}
-	// using Axis's constructor to generate both X and Y Axis. Each O(1), Total O(1)
-
 	public DataStructure(Axis xAxis, Axis yAxis) {
 		this.xAxis = xAxis;
 		this.yAxis = yAxis;
@@ -26,7 +25,6 @@ public class DataStructure implements DT {
 
 
 	@Override //O(n)
-	// Generating new Containers and setting as twins costs O(1), adding them to the lists using Axis's add method which sort them in the right place, which costs O(n). O(n) total 
 	public void addPoint(Point point) {
 		// create 2 containers
 		Container twin1 = new Container(point);
@@ -40,7 +38,6 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(n)
-	// Using Axis's "getRange" method which costs O(n), iterating thrugh them and adding to the Array costs O(n). O(n) total
 	public Point[] getPointsInRangeRegAxis(int min, int max, Boolean axis) {
 		Axis rangeAxis;
 		// using Axis's "getRange" method
@@ -75,7 +72,6 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(1)
-	// Using only methods which costs O(1), calculating the density costs O(1). O(1) total
 	public double getDensity() {
 		double xMax = xAxis.getLast().getData().getX();
 		double xMin = xAxis.getFirst().getData().getX();
@@ -87,7 +83,6 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(|A|)
-	//iterating only thrugh the elements which we need to remove, one time from the head of the list to the min value, once more from the tail of the list to the max, costs O(|A|).  O(|A|) total
 	public void narrowRange(int min, int max, Boolean axis) {
 		Axis currAxis;
 		Axis secondAxis;
@@ -121,7 +116,6 @@ public class DataStructure implements DT {
 	}
 
 	@Override //O(1)
-	//using only methods and operations which costs O(1). O(1) total
 	public Boolean getLargestAxis() {
 		int xMax = xAxis.getLast().getData().getX() - xAxis.getFirst().getData().getX();
 		int yMax = yAxis.getLast().getData().getY() - yAxis.getFirst().getData().getY();
@@ -129,7 +123,6 @@ public class DataStructure implements DT {
 	}
 
 	@Override//O(1)
-	//median value is maintained by the Axis add and remove methods, so getting it is just getting the field value. O(1) total
 	public Container getMedian(Boolean axis) {
 		if (axis)
 			return xAxis.getMedian();
