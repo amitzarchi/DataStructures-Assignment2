@@ -53,6 +53,7 @@ public class DataStructure implements DT {
 		while (index < arr.length && curr != null){
 			arr[index] = curr.getData();
 			curr = curr.getNext();
+			index++;
 		}
 		return arr;
 	}
