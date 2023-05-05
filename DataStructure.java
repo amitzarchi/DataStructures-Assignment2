@@ -156,10 +156,13 @@ public class DataStructure implements DT {
 		}
 		range.setFirst(addFirst);
 		//Iterating through the elements from the lsat one and removing them
-		addLast = middle.next;
-		while (addLast != null && comp.compareByInt(addLast.getData(), max) <= 0) {
-			index ++;
-			addLast = addLast.next;
+		addLast = middle;
+		if (addLast.next != null) {
+			addLast = middle.next;
+			while (addLast != null && comp.compareByInt(addLast.getData(), max) <= 0) {
+				index ++;
+				addLast = addLast.next;
+			}
 		}
 		range.setLast(addLast);
 		range.setSize(index);
