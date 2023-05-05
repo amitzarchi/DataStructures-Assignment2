@@ -221,10 +221,10 @@ public class DataStructure implements DT {
 		Point[] ans;
 		// handles the case there are only 2 points in the DS
 		if (xAxis.getSize() == 2) {
-			return ans = new Point[]{xAxis.getFirst().getData(), xAxis.getLast().getData()};
+			return  new Point[]{xAxis.getFirst().getData(), xAxis.getLast().getData()};
 		// handles the case there less than 2 points in the DS
 		} else if (xAxis.getSize() < 2) {
-			return ans = new Point[0];
+			return  new Point[0];
 		} else {
 			// find the biggest Axis and return two new DS split according to the median of the biggest Axis
 			boolean biggerAxis = getLargestAxis();                        //O(1)
