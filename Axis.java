@@ -27,7 +27,7 @@ public class Axis {
     }
 
     void setLast(Container last) {
-        this.Last = last
+        this.Last = last;
     }
 
     int getSize() {
