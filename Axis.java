@@ -18,13 +18,24 @@ public class Axis {
     Container getFirst() {
         return First;
     }
+    void setFirst(Container first){
+        this.First = first;
+    }
 
     Container getLast() {
         return Last;
     }
 
+    void setLast(Container last) {
+        this.Last = last;
+    }
+
     int getSize() {
         return Size;
+    }
+
+    void setSize(int size) {
+        this.Size = size;
     }
 
     Container getMedian() {
@@ -34,6 +45,7 @@ public class Axis {
 
 
     public void add(Container toAdd) {
+        // handle the case there are no containers in the Axis before.
         if (this.Size == 0) {
             this.First = toAdd;
             this.Last = toAdd;
@@ -43,12 +55,12 @@ public class Axis {
         else {
             Container current = this.First;
             Container prev = null;
-            // Iteraiting the list to find the right sorted place
+            // iterating the list to find the right sorted place
             while (current != null && Comparator.compare(current.getData(), toAdd.getData()) < 0) {
                 prev = current;
                 current = current.getNext();
             }
-            // handle the case its the first Container
+            // handle the case its the first place Container
             if (prev == null) {
                 toAdd.next = this.First;
                 this.First.prev = toAdd;
@@ -67,6 +79,7 @@ public class Axis {
                 toAdd.next = current;
                 toAdd.prev = prev;
             }
+            // preserve the fields Median and Size
             this.Size = this.Size+1;
             PreserveMedianAdd(toAdd);
         }
@@ -89,22 +102,25 @@ public class Axis {
     }
 
     public void remove(Container toRemove) {
-        Size--;
-        PreserveMedianDelete(toRemove);
         if (toRemove == null) {
             return;
         }
+        // preserve the fields Median and Size
+        Size --;
+        PreserveMedianDelete(toRemove);
         //handle the case its removing the first element
         if (toRemove == First) {
             First = toRemove.next;
-        } 
+        }
+        //handle the case its not removing the first element
         else {
             toRemove.prev.next = toRemove.next;
         }
         //handle the case its removing the last element
         if (toRemove == Last) {
             Last = toRemove.prev;
-        } 
+        }
+        //handle the case its not removing the last element
         else {
             toRemove.next.prev = toRemove.prev;
         }
@@ -116,37 +132,34 @@ public class Axis {
     public Axis getRange(int min, int max) {
         PointComparator comp = this.getComparator();
         Axis output = new Axis(this.Comparator);
-        Container current =this.Last;
+        Container current = this.Last;
         Container toAdd = null;
-        //iterating thrugh the whole list, and adding the relevant elements to "output"
+        //iterating through the whole list, and adding the relevant elements to "output"
+        // add is O(1) because its from the largest to the smallest, so always add in the first place.
         while (current != null) {
             if (comp.compareByInt(current.getData(), min) >= 0 & comp.compareByInt(current.getData(), max) <= 0) {
                 toAdd = new Container(current.getData());
                 output.add(toAdd);
-                current = current.prev;
             }
-            else 
-                current = current.prev;
+            current = current.prev;
         }
         return output;
     }
 
     public Axis getFitRange(int min, int max ,PointComparator comp) {
         Axis output = new Axis(this.getComparator());
-        Container current =this.Last;
+        Container current = this.Last;
         Container toAdd = null;
+        //iterating through the whole list, and adding the relevant elements to "output" according the second Axis Comparator
+        //add is O(1) because its from the largest to the smallest, so always add in the first place.
         while (current != null) {
             if (comp.compareByInt(current.getData(), min) >= 0 & comp.compareByInt(current.getData(), max) <= 0) {
                 toAdd = new Container(current.getData());
                 output.add(toAdd);
-                current = current.prev;
             }
-            else 
-                current = current.prev;
+            current = current.prev;
         }
         return output;
     }
-
-
 }
 
