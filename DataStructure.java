@@ -133,41 +133,36 @@ public class DataStructure implements DT {
 	}
 
 
-	private Point[] GetB(Container container, int max, int min, Boolean axis) {
-		Axis range;
+	// return an array with all B Points
+	private Point[] GetB(Container middle, int max, int min, Boolean axis) {
 		int index = 0;
-		Container addLast;
-		Container addFirst;
-		Container middle;
-		Container toAdd;
-		PointComparator comp;
-		if (axis) {
-			comp = this.getAxisX().getComparator();
-			middle = this.getAxisX().getMedian();
-		} else {
-			comp = this.getAxisY().getComparator();
-			middle = this.getAxisY().getMedian();
-		}
-		range = new Axis(comp);
-		addFirst = middle;
-		while (addFirst != null && comp.compareByInt(addFirst.getData(), min) >= 0) {
+		PointComparator comp = getComparator(axis);
+		Axis range = new Axis(comp);
+		Container addLast = middle;
+		Container addFirst = middle;
+		Container addLastN = middle;
+		Container addFirstN = middle;
+		// find all the points on the left side and set the last one as "First" to the new range Axis
+		while (addFirstN != null && comp.compareByInt(addFirstN.getData(), min) >= 0) {
 			index ++;
-			addFirst = addFirst.prev;
+			addFirst = addFirstN;
+			addFirstN = addFirstN.prev;
 		}
 		range.setFirst(addFirst);
-		//Iterating through the elements from the lsat one and removing them
-		addLast = middle;
-		if (addLast.next != null) {
-			addLast = middle.next;
-			while (addLast != null && comp.compareByInt(addLast.getData(), max) <= 0) {
+		// find all the points on the right side and set the last one as "Last" to the new range Axis
+		if (addLastN.next != null) {
+			addLastN = addLastN.next;
+			while (addLastN != null && comp.compareByInt(addLastN.getData(), max) <= 0) {
 				index ++;
-				addLast = addLast.next;
+				addLast = addLastN;
+				addLastN = addLastN.next;
 			}
 		}
 		range.setLast(addLast);
 		range.setSize(index);
+		// add all the Point from range Axis into array and return array
 		Point[] arr = new Point[index];
-		toAdd = range.getLast();
+		Container toAdd = range.getLast();
 		while (index > 0) {
 			arr[index-1] =  toAdd.getData();
 			toAdd = toAdd.prev;
@@ -175,37 +170,39 @@ public class DataStructure implements DT {
 		}
 		return arr;
 	}
+
+	// the function gets median by axis and width, and return the closest pair in distance less than width/2, if there isnt return empty array
+	// the function checks the size of B(how many points are in the strip) and choose algorithm between min(O(n) / O(B*log(B)) to sort B array point according to the second axis
+	// after having all B points sorted according to the second axis, we can check only points that their second axis's values is less than width/2 according to the assumption
+	// mathematical proof shows that in that way two "for loops" is only O(B) intend of O(B^2)
 	@Override
 	public Point[] nearestPairInStrip(Container container, double width, Boolean axis) {
-		Point[] ans = new Point[2];
-		int mid;
+		Point[] ans = new Point[0];
 		double minDist = (width/2);
-		PointComparator comp;
-		Point[] arrB;
+		// get comparator according to the second axis
+		PointComparator comp = getComparator(!axis);
+		int mid = getPointValue(container.getData(), axis);
 		int sizeB;
-		if (axis) mid = container.getData().getX();
-		else mid = container.getData().getY();
-		// find B and B len O(B)
+		Point[] arrB;
+		// find B, and B len O(B)
 		arrB = GetB(container,(int)(mid-minDist), (int)(mid+minDist), axis);
 		sizeB = arrB.length;
+		// get arrB sorted according to the second axis
 		// O(n) if n < B*log(B)
 		if ((sizeB*Math.log(sizeB)) > this.xAxis.getSize()) {
-			arrB = getPointsInRangeOppAxis((int)(mid-minDist), (int)(mid+minDist), axis); //O(n)
+			arrB = getPointsInRangeOppAxis((int)(mid-minDist), (int)(mid+minDist), axis);
 		}
 		// O(B*log(B)) if B*log(B) < n
 		else {
-			if (axis) comp = this.getAxisX().getComparator();
-			else comp = this.getAxisY().getComparator();
-			Arrays.sort(arrB, comp);            //O(B*log(B))
+			Arrays.sort(arrB, comp);
 		}
-		//check all distances between two possible points (max 7 in the inner for loop)
+		// check all distances between two possible points (max 7 in the inner for loop)
 		// O(B)
-		for (int i = 0; i < sizeB; i++) {															//O(|B|)
-				for(int j = i+1; j<sizeB && (getPointValue(arrB[j],axis) - getPointValue(arrB[i],axis)) < minDist; j++) {		//O(7)
-					if (getDistance(arrB[j], arrB[i]) < width/2) {
+		for (int i = 0; i < sizeB-1; i++) {	//O(B)
+				for(int j = i+1; j < sizeB && (getPointValue(arrB[j],!axis) - getPointValue(arrB[i],!axis)) < minDist; j++) {	//O(7)
+					if (getDistance(arrB[j], arrB[i]) < minDist) {
 						minDist = getDistance(arrB[j], arrB[i]);
-						ans[0] = new Point(arrB[i]);
-						ans[1] = new Point(arrB[j]);
+						ans = new Point[]{new Point(arrB[i]), new Point(arrB[j])};
 					}
 				}
 		}
@@ -227,20 +224,20 @@ public class DataStructure implements DT {
 			return  new Point[0];
 		} else {
 			// find the biggest Axis and return two new DS split according to the median of the biggest Axis
-			boolean biggerAxis = getLargestAxis();                        //O(1)
-			DataStructure[] arr = SplitByMedian(biggerAxis);            //O(n)
+			boolean biggerAxis = getLargestAxis();                  	      //O(1)
+			DataStructure[] arrDS = SplitByMedian(biggerAxis);          	  //O(n)
 			// recursively find the nearest pair in each new DS
-			Point[] left = arr[0].nearestPair();                        //(T(n/2))
-			Point[] right = arr[1].nearestPair();                        //T(n/2)
+			Point[] left = arrDS[0].nearestPair();                 		      //(T(n/2))
+			Point[] right = arrDS[1].nearestPair();                    		  //(T(n/2))
 			// calculate each result (for left/right) into distance
 			double leftDistance;
 			double rightDistance;
-			leftDistance = getDistance(left[0], left[1]);                    //O(1)
+			leftDistance = getDistance(left[0], left[1]);                     //O(1)
 			//there are at least two points in the DS, so in the left there will always be 2 points, so we check the case that right does not have 2 points
 			if (right.length != 2) {
-				rightDistance = leftDistance + 1;                //O(1)
+				rightDistance = leftDistance + 1;
 			}
-			else rightDistance = getDistance(right[0], right[1]);                    //O(1)
+			else rightDistance = getDistance(right[0], right[1]);             //O(1)
 			// choose the min between them
 			double minDist;
 			if (leftDistance < rightDistance) {
@@ -253,7 +250,7 @@ public class DataStructure implements DT {
 			// find the nearest in the strip of the current DS with the width according to the recursive results
 			Point[] middle = nearestPairInStrip(this.getMedian(biggerAxis), 2 * minDist, biggerAxis);	//O(n)
 			//choose the final closest to points (from the left / right / strip in the middle)
-			if (getDistance(middle[0], middle[1]) < minDist) {
+			if (middle.length == 2 && getDistance(middle[0], middle[1]) < minDist) {
 				ans = middle;
 			}
 		}
@@ -318,6 +315,12 @@ public class DataStructure implements DT {
 	private int getPointValue(Point point, boolean axis) {
 		if (axis) return point.getX();
 		else return point.getY();
+	}
+
+	// get Point Comparator (x/y)
+	private PointComparator getComparator(boolean axis) {
+		if (axis) return this.getAxisX().getComparator();
+		else return this.getAxisY().getComparator();
 	}
 
 }
